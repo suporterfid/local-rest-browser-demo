@@ -29,7 +29,7 @@ app.UseStaticFiles();
 Console.WriteLine("Configuring default page route");
 app.MapGet("/", async context =>
 {
-    Console.WriteLine($"GET / requested from {context.Request.Headers["Origin"] ?? "unknown origin"}");
+    //Console.WriteLine($"GET / requested from {context.Request.Headers["Origin"] ?? "unknown origin"}");
     await context.Response.SendFileAsync("wwwroot/index.html");
     Console.WriteLine("index.html sent to client");
 });
