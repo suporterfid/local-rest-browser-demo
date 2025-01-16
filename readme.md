@@ -177,7 +177,7 @@ Verify:
 
 2. "SSL connection could not be established":
    - Verify root certificate installation
-   - Check certificate password (default: demo123!)
+   - Check certificate password (default: demo123)
 
 3. ".NET SDK is not installed":
    - Run check-install-dotnet.bat
