@@ -40,7 +40,7 @@ local-rest-browser-demo/
    ```batch
    cd path/to/local-rest-browser-demo
    ```
-4. Generate SSL certificates:
+4. Generate SSL certificates (this script requires Docker to be running locally):
    ```batch
    generate-certs.bat
    ```
