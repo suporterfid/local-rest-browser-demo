@@ -26,8 +26,13 @@ local-rest-browser-demo/
 +-- ApplicationA-REST/     # REST Server application
 +-- ApplicationB-Web/      # Web application
 +-- generate-certs.bat     # Certificate generation script
-+-- start-application-a.bat # Script to start Application A
-+-- start-application-b.bat # Script to start Application B
++-- check-install-dotnet.bat # Script to verify if .NET 9 is installed and install it in case is needed
++-- start-application-a-REST.bat # Script to start Application A on port 5001
++-- start-application-a-REST-5003.bat # Script to start Application A on port 5003
++-- start-application-a-REST-5005.bat # Script to start Application A on port 5005
++-- start-application-b-WEB.bat # Script to start Application B
++-- clean-application-a.bat # Script to clean-up Application A build
++-- clean-application-b.bat # Script to clean-up Application B build
 +-- README.md
 +-- architecture-svg.svg    # Architecture diagram
 ```
@@ -53,7 +58,7 @@ local-rest-browser-demo/
    - Navigate to the project folder
    - Run:
      ```batch
-     start-application-a.bat
+     start-application-a-REST.bat
      ```
    - The server will start at https://localhost:5001
 
@@ -62,7 +67,7 @@ local-rest-browser-demo/
    - Navigate to the project folder
    - Run:
      ```batch
-     start-application-b.bat
+     start-application-b-WEB.bat
      ```
    - The web application will start at https://localhost:5002
 
