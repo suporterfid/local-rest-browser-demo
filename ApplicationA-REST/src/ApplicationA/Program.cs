@@ -53,10 +53,47 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configure HTTP client
+builder.Services.AddHttpClient<RegistrationService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+    });
+
+// Add the registration service
+builder.Services.AddHostedService<RegistrationService>();
+
+// Register API key service
+builder.Services.AddSingleton<ApiKeyService>();
+
+
+// Add configuration for Application B URL
+builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    {"AppB:RegistrationUrl", "https://localhost:5002/api/discovery/register"},
+    {"AppB:DeregistrationUrl", "https://localhost:5002/api/discovery/deregister"}
+});
+
 var app = builder.Build();
 
 // Enable CORS
 app.UseCors("AllowWebApp");
+
+// Add the version middleware
+app.UseMiddleware<ApiVersionMiddleware>();
+
+// Add the API key authentication middleware after CORS and before endpoints
+app.UseMiddleware<ApiKeyAuthMiddleware>();
+
+// Optional: Add middleware to log API key usage
+app.Use(async (context, next) =>
+{
+    if (context.Items.TryGetValue("ApiKeyName", out var keyName))
+    {
+        Console.WriteLine($"Request to {context.Request.Path} using API key: {keyName}");
+    }
+    await next();
+});
 
 // Enable static files
 app.UseStaticFiles();
@@ -65,19 +102,60 @@ Console.WriteLine("Static files middleware enabled");
 // API endpoints
 Console.WriteLine("Configuring API endpoints");
 
-app.MapGet("/api/hello", (HttpContext context) =>
+// app.MapGet("/api/hello", (HttpContext context) =>
+// {
+//     Console.WriteLine($"GET /api/hello requested from {context.Request.Headers["Origin"]}");
+//     return Results.Json(new { message = "Hello from Application A!" });
+// });
+
+// app.MapPost("/api/echo", async (HttpContext context) =>
+// {
+//     Console.WriteLine($"POST /api/echo requested from {context.Request.Headers["Origin"]}");
+//     using var reader = new StreamReader(context.Request.Body);
+//     var body = await reader.ReadToEndAsync();
+//     Console.WriteLine($"Echo request body: {body}");
+//     return Results.Json(new { echo = body });
+// });
+
+// app.MapGet("/api/health", (HttpContext context) =>
+// {
+//     Console.WriteLine($"Health check requested from {context.Request.Headers["Origin"]}");
+//     return Results.Json(new { 
+//         status = "healthy",
+//         timestamp = DateTime.UtcNow,
+//         version = "1.0.0",
+//         endpoint = context.Request.Host.ToString()
+//     });
+// });
+
+// Version 1 endpoints
+app.MapGet($"/{ApiVersioning.V1.Route}/health", [ApiVersion("1.0")] (HttpContext context) =>
 {
-    Console.WriteLine($"GET /api/hello requested from {context.Request.Headers["Origin"]}");
-    return Results.Json(new { message = "Hello from Application A!" });
+    Console.WriteLine($"Health check requested from {context.Request.Headers["Origin"]}");
+    var response = new VersionedResponse<object>(new { 
+        status = "healthy",
+        timestamp = DateTime.UtcNow,
+        version = "1.0.0",
+        endpoint = context.Request.Host.ToString()
+    });
+    return Results.Json(response);
 });
 
-app.MapPost("/api/echo", async (HttpContext context) =>
+app.MapGet($"/{ApiVersioning.V1.Route}/hello", [ApiVersion("1.0")] (HttpContext context) =>
 {
-    Console.WriteLine($"POST /api/echo requested from {context.Request.Headers["Origin"]}");
+    Console.WriteLine($"GET /{ApiVersioning.V1.Route}/hello requested from {context.Request.Headers["Origin"]}");
+    var response = new VersionedResponse<object>(new { message = "Hello from Application A!" });
+    return Results.Json(response);
+});
+
+app.MapPost($"/{ApiVersioning.V1.Route}/echo", [ApiVersion("1.0")] async (HttpContext context) =>
+{
+    Console.WriteLine($"POST /{ApiVersioning.V1.Route}/echo requested from {context.Request.Headers["Origin"]}");
     using var reader = new StreamReader(context.Request.Body);
     var body = await reader.ReadToEndAsync();
     Console.WriteLine($"Echo request body: {body}");
-    return Results.Json(new { echo = body });
+    var response = new VersionedResponse<object>(new { echo = body });
+    return Results.Json(response);
 });
 
 Console.WriteLine("Application A is ready to start");

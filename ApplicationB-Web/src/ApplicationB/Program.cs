@@ -11,6 +11,9 @@ builder.Configuration.AddCommandLine(args);
 var appAHosts = (builder.Configuration["AppAHosts"] ?? "https://localhost:5001").Split(',');
 Console.WriteLine($"Available Application A hosts: {string.Join(", ", appAHosts)}");
 
+var apiKey = builder.Configuration["AppAApiKey"] ?? "demo-key-1";
+Console.WriteLine("API key configured for Application A communication");
+
 // Get the base directory path
 var baseDirectory = Directory.GetCurrentDirectory();
 var certificatePath = Path.Combine(baseDirectory, "..", "..", "..", "certificates", "ApplicationB.pfx");
@@ -27,6 +30,9 @@ builder.WebHost.ConfigureKestrel(options =>
         listenOptions.UseHttps(certificatePath, certificatePassword);
     });
 });
+
+// Register the DiscoveryService
+builder.Services.AddSingleton<DiscoveryService>();
 
 var app = builder.Build();
 
@@ -47,11 +53,48 @@ Console.WriteLine("Configuring default page route");
 app.MapGet("/", async context =>
 {
     var html = await File.ReadAllTextAsync("wwwroot/index.html");
+    // Replace both the hosts and API key
     html = html.Replace("APP_A_HOSTS", JsonSerializer.Serialize(appAHosts));
+    html = html.Replace("APP_A_API_KEY", JsonSerializer.Serialize(apiKey));
     await context.Response.WriteAsync(html);
-    Console.WriteLine("index.html sent to client with configured host");
+    Console.WriteLine("index.html sent to client with configured host and API key");
+});
+
+app.MapPost("/api/discovery/register", async (HttpContext context, DiscoveryService discovery) =>
+{
+    var instanceInfo = await context.Request.ReadFromJsonAsync<InstanceInfo>();
+    if (instanceInfo == null)
+    {
+        return Results.BadRequest("Invalid instance information");
+    }
+
+    discovery.RegisterInstance(instanceInfo);
+    return Results.Ok();
+});
+
+app.MapPost("/api/discovery/deregister", async (HttpContext context, DiscoveryService discovery) =>
+{
+    var request = await context.Request.ReadFromJsonAsync<DeregisterRequest>();
+    if (request?.InstanceId == null)
+    {
+        return Results.BadRequest("Instance ID is required");
+    }
+
+    discovery.DeregisterInstance(request.InstanceId);
+    return Results.Ok();
+});
+
+app.MapGet("/api/discovery/instances", (DiscoveryService discovery) =>
+{
+    var instances = discovery.GetActiveInstances();
+    return Results.Json(instances);
 });
 
 Console.WriteLine("Application B is ready to start");
 app.Run();
 Console.WriteLine("Application B is shutting down");
+
+public class DeregisterRequest
+{
+    public required string InstanceId { get; set; }
+}
