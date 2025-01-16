@@ -1,77 +1,26 @@
-<!--
-Path: .\ApplicationB-Web\src\ApplicationB\wwwroot\index.html
-Generated: 2025-01-16 12:02:43
-Project: Demo REST and Browser Applications
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo Web Application</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .result {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-        .error {
-            color: red;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Demo Web Application</h1>
+<body class="bg-gray-50">
+    <div id="app"></div>
+
+    <script>
+        // The hosts will be injected by the server
+        const availableHosts = APP_A_HOSTS;
+    </script>
     
-    <div>
-        <h2>API Test</h2>
-        <button onclick="testHello()">Test Hello Endpoint</button>
-        <div id="helloResult" class="result"></div>
-    </div>
-
-    <div>
-        <h2>Echo Test</h2>
-        <input type="text" id="echoMessage" placeholder="Enter message to echo">
-        <button onclick="testEcho()">Test Echo Endpoint</button>
-        <div id="echoResult" class="result"></div>
-    </div>
-
-	<script>const applicationAHost = "APP_A_HOST";</script>
-		<script src="APP_A_HOST/api-client.js"></script>
-		<script>
-        const api = new ApiClient(applicationAHost);
-
-        async function testHello() {
-            const resultDiv = document.getElementById('helloResult');
-            try {
-                const result = await api.sayHello();
-                resultDiv.textContent = JSON.stringify(result, null, 2);
-                resultDiv.classList.remove('error');
-            } catch (error) {
-                resultDiv.textContent = `Error: ${error.message}`;
-                resultDiv.classList.add('error');
-            }
-        }
-
-        async function testEcho() {
-            const messageInput = document.getElementById('echoMessage');
-            const resultDiv = document.getElementById('echoResult');
-            try {
-                const result = await api.echo(messageInput.value);
-                resultDiv.textContent = JSON.stringify(result, null, 2);
-                resultDiv.classList.remove('error');
-            } catch (error) {
-                resultDiv.textContent = `Error: ${error.message}`;
-                resultDiv.classList.add('error');
-            }
-        }
+    <script type="module">
+        import HostSelector from './components/HostSelector.js';
+        
+        // Initialize the host selector when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            HostSelector.init('app', availableHosts);
+        });
     </script>
 </body>
 </html>

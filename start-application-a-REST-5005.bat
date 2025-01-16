@@ -1,22 +1,22 @@
-REM Path: .\start-application-b-WEB.bat
+REM Path: .\start-application-a-REST.bat
 REM Generated: 2025-01-16 12:02:43
 REM Project: Demo REST and Browser Applications
 
 @echo off
 setlocal enabledelayedexpansion
 
-echo Starting Application B - Web Server...
+echo Starting Application A - REST Server...
 
 REM Check if the directory exists
-if not exist ApplicationB-Web\src\ApplicationB (
-    echo Error: Application B directory not found.
+if not exist ApplicationA-REST\src\ApplicationA (
+    echo Error: Application A directory not found.
     echo Please ensure you're running this script from the demo-project root folder.
     pause
     exit /b 1
 )
 
 REM Check if certificates exist
-if not exist certificates\ApplicationB.pfx (
+if not exist certificates\ApplicationA.pfx (
     echo Error: SSL certificate not found.
     echo Please run generate-certs.bat first to create the required certificates.
     pause
@@ -24,10 +24,10 @@ if not exist certificates\ApplicationB.pfx (
 )
 
 REM Change to application directory
-cd ApplicationB-Web\src\ApplicationB
+cd ApplicationA-REST\src\ApplicationA
 
 REM Check if project file exists
-if not exist ApplicationB.csproj (
+if not exist ApplicationA.csproj (
     echo Error: Project file not found.
     echo Please ensure the application is properly set up.
     cd ..\..\..
@@ -35,11 +35,9 @@ if not exist ApplicationB.csproj (
     exit /b 1
 )
 
-echo Starting Web Server at https://localhost:5002
+echo Starting REST Server at https://localhost:5005
+dotnet run --Host=localhost --Port=5005 --AllowedOrigins=https://localhost:5002
 REM dotnet run
-REM The specified host MUST BE the Application A - the REST server
-REM dotnet run --AppAHost=https://localhost:5001
-dotnet run --AppAHosts=https://localhost:5001,https://localhost:5003,https://localhost:5005
 cd ..\..\..
 pause
 

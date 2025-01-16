@@ -1,11 +1,15 @@
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.StaticFiles;
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine("Starting Application B - Web Server...");
 
-// Add configuration for Application A host
+// Add configuration for Application A hosts
 builder.Configuration.AddCommandLine(args);
-var appAHost = builder.Configuration["AppAHost"] ?? "https://localhost:5001";
-Console.WriteLine($"Application A host configured as: {appAHost}");
+var appAHosts = (builder.Configuration["AppAHosts"] ?? "https://localhost:5001").Split(',');
+Console.WriteLine($"Available Application A hosts: {string.Join(", ", appAHosts)}");
 
 // Get the base directory path
 var baseDirectory = Directory.GetCurrentDirectory();
@@ -26,16 +30,24 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-// Enable static files
-Console.WriteLine("Enabling static files middleware");
-app.UseStaticFiles();
+// Configure static files with JSX support
+var contentTypeProvider = new FileExtensionContentTypeProvider();
+contentTypeProvider.Mappings[".jsx"] = "application/javascript"; // Update existing mapping instead of adding
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = "",
+    ContentTypeProvider = contentTypeProvider
+});
 
 // Serve default page with injected configuration
 Console.WriteLine("Configuring default page route");
 app.MapGet("/", async context =>
 {
     var html = await File.ReadAllTextAsync("wwwroot/index.html");
-    html = html.Replace("APP_A_HOST", appAHost);
+    html = html.Replace("APP_A_HOSTS", JsonSerializer.Serialize(appAHosts));
     await context.Response.WriteAsync(html);
     Console.WriteLine("index.html sent to client with configured host");
 });
