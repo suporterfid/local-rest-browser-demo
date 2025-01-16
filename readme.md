@@ -202,7 +202,7 @@ Verify:
 ## Security Notes
 
 - All certificates are self-signed for development
-- Certificate password is "demo123!" (stored in scripts)
+- Certificate password is "demo123" (stored in scripts)
 - CORS is configured for specific origins only
 - Do not use these certificates in production
 - Certificates expire after 365 days
