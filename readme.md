@@ -14,7 +14,7 @@ The following diagram illustrates the distributed architecture of the demo proje
 
 - Windows 10 or later
 - .NET 9 SDK
-- Docker Desktop
+- Docker Desktop (only to generate the SSL certificates)
 - Visual Studio 2022 or VS Code
 - cURL (optional, for API testing)
 
