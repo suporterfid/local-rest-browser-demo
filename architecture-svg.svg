@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+    <!-- Definitions for reuse -->
+    <defs>
+        <!-- Arrow marker -->
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+        </marker>
+        <!-- Box shadow -->
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+        </filter>
+    </defs>
+
+    <!-- Browser Group -->
+    <g transform="translate(300, 50)">
+        <rect x="0" y="0" width="200" height="80" rx="5" fill="#bbdefb" stroke="#1976d2" stroke-width="2" filter="url(#shadow)"/>
+        <text x="100" y="35" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">Web Browser</text>
+        <text x="100" y="55" text-anchor="middle" font-family="Arial" font-size="12">https://localhost:5002</text>
+    </g>
+
+    <!-- Application B Group -->
+    <g transform="translate(50, 200)">
+        <rect x="0" y="0" width="250" height="160" rx="5" fill="#e1bee7" stroke="#7b1fa2" stroke-width="2" filter="url(#shadow)"/>
+        <text x="125" y="30" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">Application B - Web Server</text>
+        <rect x="25" y="50" width="200" height="90" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1"/>
+        <text x="125" y="75" text-anchor="middle" font-family="Arial" font-size="12">ASP.NET Core Web Server</text>
+        <text x="125" y="95" text-anchor="middle" font-family="Arial" font-size="12">Port 5002</text>
+        <text x="125" y="115" text-anchor="middle" font-family="Arial" font-size="12">Static Files (index.html)</text>
+        <text x="125" y="130" text-anchor="middle" font-family="Arial" font-size="12">ApplicationB.pfx</text>
+    </g>
+
+    <!-- Application A Group -->
+    <g transform="translate(500, 200)">
+        <rect x="0" y="0" width="250" height="160" rx="5" fill="#ffcdd2" stroke="#c62828" stroke-width="2" filter="url(#shadow)"/>
+        <text x="125" y="30" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">Application A - REST Server</text>
+        <rect x="25" y="50" width="200" height="90" rx="5" fill="#ffebee" stroke="#c62828" stroke-width="1"/>
+        <text x="125" y="75" text-anchor="middle" font-family="Arial" font-size="12">ASP.NET Core Minimal API</text>
+        <text x="125" y="95" text-anchor="middle" font-family="Arial" font-size="12">Port 5001</text>
+        <text x="125" y="115" text-anchor="middle" font-family="Arial" font-size="12">/api/hello, /api/echo</text>
+        <text x="125" y="130" text-anchor="middle" font-family="Arial" font-size="12">ApplicationA.pfx</text>
+    </g>
+
+    <!-- Certificate Management Group -->
+    <g transform="translate(275, 420)">
+        <rect x="0" y="0" width="250" height="130" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="2" filter="url(#shadow)"/>
+        <text x="125" y="30" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">Certificate Management</text>
+        <rect x="25" y="50" width="200" height="60" rx="5" fill="#fffde7" stroke="#f9a825" stroke-width="1"/>
+        <text x="125" y="75" text-anchor="middle" font-family="Arial" font-size="12">Docker + OpenSSL</text>
+        <text x="125" y="95" text-anchor="middle" font-family="Arial" font-size="12">DemoRootCA.crt</text>
+    </g>
+
+    <!-- Connections -->
+    <!-- Browser to App B -->
+    <line x1="300" y1="90" x2="175" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <!-- Browser to App A -->
+    <line x1="500" y1="90" x2="625" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <!-- Cert Management to App B -->
+    <line x1="275" y1="485" x2="175" y2="360" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <!-- Cert Management to App A -->
+    <line x1="525" y1="485" x2="625" y2="360" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Legend -->
+    <g transform="translate(50, 50)">
+        <rect x="0" y="0" width="120" height="90" rx="5" fill="white" stroke="#666" stroke-width="1"/>
+        <text x="60" y="20" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold">Legend</text>
+        <circle cx="15" cy="40" r="5" fill="#bbdefb"/>
+        <text x="30" y="45" font-family="Arial" font-size="12">Client</text>
+        <circle cx="15" cy="60" r="5" fill="#ffcdd2"/>
+        <text x="30" y="65" font-family="Arial" font-size="12">Server</text>
+        <circle cx="15" cy="80" r="5" fill="#fff9c4"/>
+        <text x="30" y="85" font-family="Arial" font-size="12">Security</text>
+    </g>
+</svg>
