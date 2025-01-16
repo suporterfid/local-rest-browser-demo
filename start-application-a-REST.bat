@@ -36,7 +36,8 @@ if not exist ApplicationA.csproj (
 )
 
 echo Starting REST Server at https://localhost:5001
-dotnet run
+dotnet run --Host=localhost --Port=5001 --AllowedOrigins=https://localhost:5002
+REM dotnet run
 cd ..\..\..
 pause
 

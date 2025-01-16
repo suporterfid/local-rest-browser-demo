@@ -2,6 +2,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine("Starting Application B - Web Server...");
 
+// Add configuration for Application A host
+builder.Configuration.AddCommandLine(args);
+var appAHost = builder.Configuration["AppAHost"] ?? "https://localhost:5001";
+Console.WriteLine($"Application A host configured as: {appAHost}");
+
 // Get the base directory path
 var baseDirectory = Directory.GetCurrentDirectory();
 var certificatePath = Path.Combine(baseDirectory, "..", "..", "..", "certificates", "ApplicationB.pfx");
@@ -25,13 +30,14 @@ var app = builder.Build();
 Console.WriteLine("Enabling static files middleware");
 app.UseStaticFiles();
 
-// Serve default page
+// Serve default page with injected configuration
 Console.WriteLine("Configuring default page route");
 app.MapGet("/", async context =>
 {
-    //Console.WriteLine($"GET / requested from {context.Request.Headers["Origin"] ?? "unknown origin"}");
-    await context.Response.SendFileAsync("wwwroot/index.html");
-    Console.WriteLine("index.html sent to client");
+    var html = await File.ReadAllTextAsync("wwwroot/index.html");
+    html = html.Replace("APP_A_HOST", appAHost);
+    await context.Response.WriteAsync(html);
+    Console.WriteLine("index.html sent to client with configured host");
 });
 
 Console.WriteLine("Application B is ready to start");

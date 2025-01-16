@@ -36,7 +36,9 @@ if not exist ApplicationB.csproj (
 )
 
 echo Starting Web Server at https://localhost:5002
-dotnet run
+REM dotnet run
+REM The specified host MUST BE the Application A - the REST server
+dotnet run --AppAHost=https://localhost:5001
 cd ..\..\..
 pause
 

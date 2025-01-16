@@ -2,6 +2,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine("Starting Application A - REST Server...");
 
+// Add configuration for host and allowed origins
+builder.Configuration.AddCommandLine(args);
+var host = builder.Configuration["Host"] ?? "localhost";
+var port = int.Parse(builder.Configuration["Port"] ?? "5001");
+var allowedOrigins = (builder.Configuration["AllowedOrigins"] ?? "https://localhost:5002").Split(',');
+
+Console.WriteLine($"Server will listen on: https://{host}:{port}");
+Console.WriteLine($"Allowed origins: {string.Join(", ", allowedOrigins)}");
+
 // Get the base directory path
 var baseDirectory = Directory.GetCurrentDirectory();
 var certificatePath = Path.Combine(baseDirectory, "..", "..", "..", "certificates", "ApplicationA.pfx");
@@ -12,11 +21,24 @@ Console.WriteLine($"Using certificate from: {certificatePath}");
 // Configure HTTPS
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenLocalhost(5001, listenOptions =>
+    // If host is "localhost" or "127.0.0.1", use ListenLocalhost, otherwise listen on any IP
+    if (host.Equals("localhost", StringComparison.OrdinalIgnoreCase) || 
+        host.Equals("127.0.0.1", StringComparison.OrdinalIgnoreCase))
     {
-        Console.WriteLine("Configuring HTTPS on port 5001");
-        listenOptions.UseHttps(certificatePath, certificatePassword);
-    });
+        options.ListenLocalhost(port, listenOptions =>
+        {
+            Console.WriteLine($"Configuring HTTPS on port {port} for localhost");
+            listenOptions.UseHttps(certificatePath, certificatePassword);
+        });
+    }
+    else
+    {
+        options.Listen(System.Net.IPAddress.Parse(host), port, listenOptions =>
+        {
+            Console.WriteLine($"Configuring HTTPS on port {port} for {host}");
+            listenOptions.UseHttps(certificatePath, certificatePassword);
+        });
+    }
 });
 
 // Configure CORS
@@ -25,7 +47,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowWebApp", policy =>
     {
-        policy.WithOrigins("https://localhost:5002")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

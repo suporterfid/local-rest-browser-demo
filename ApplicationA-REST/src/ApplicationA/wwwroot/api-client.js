@@ -1,5 +1,8 @@
 class ApiClient {
-    constructor(baseUrl = 'https://localhost:5001') {
+    constructor(baseUrl) {
+        if (!baseUrl) {
+            throw new Error('baseUrl is required');
+        }
         this.baseUrl = baseUrl;
     }
 

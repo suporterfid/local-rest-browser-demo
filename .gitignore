@@ -80,3 +80,5 @@ ApplicationB-Web/src/ApplicationB/obj/Debug/net9.0/staticwebassets/msbuild.build
 ApplicationB-Web/src/ApplicationB/obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.ApplicationB.props
 ApplicationB-Web/src/ApplicationB/obj/project.assets.json
 ApplicationB-Web/src/ApplicationB/obj/project.nuget.cache
+ApplicationB-Web/src/ApplicationB/obj/Debug/net9.0/compressed/hqsdq1xgvk-k5bbfz7iad.gz
+ApplicationA-REST/src/ApplicationA/obj/Debug/net9.0/compressed/o6f75uza5p-ljmy9m080t.gz

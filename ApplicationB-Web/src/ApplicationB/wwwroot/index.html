@@ -43,9 +43,10 @@ Project: Demo REST and Browser Applications
         <div id="echoResult" class="result"></div>
     </div>
 
-    <script src="https://localhost:5001/api-client.js"></script>
-    <script>
-        const api = new ApiClient();
+	<script>const applicationAHost = "APP_A_HOST";</script>
+		<script src="APP_A_HOST/api-client.js"></script>
+		<script>
+        const api = new ApiClient(applicationAHost);
 
         async function testHello() {
             const resultDiv = document.getElementById('helloResult');
